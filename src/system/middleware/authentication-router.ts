@@ -3,7 +3,6 @@ import { userIdentityService } from '../../modules/auth/auth-service/service';
 import { logger } from '../logging/logger';
 import { HttpResponseBuilder } from '../builders/http-response.builder';
 
-
 const publicRoutes = [
     '/api/auth/login',
     '/api/auth/register',
@@ -43,10 +42,15 @@ export const authenticationRouter = async (
         } else {
             try {
                 const userCredentials = userIdentityService.verifyUser(token);
-                userIdentityService.assignUserToRequestContext(userCredentials, req);
+                userIdentityService.assignUserToRequestContext(
+                    userCredentials,
+                    req,
+                );
                 next();
             } catch (error) {
-                logger.error(`Error during user verification: ${error.message}`);
+                logger.error(
+                    `Error during user verification: ${error.message}`,
+                );
                 res.status(500).send('Internal Server Error');
             }
         }

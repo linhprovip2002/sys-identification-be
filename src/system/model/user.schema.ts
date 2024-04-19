@@ -1,13 +1,31 @@
-import { model, Model, Schema, Document } from 'mongoose';
+import { model, Model, Schema, Document, Mongoose } from 'mongoose';
+import paginate from 'mongoose-paginate-v2';
+import { SoftDeleteDocument } from 'mongoose-delete';
+import MongooseDelete, { SoftDeleteModel } from 'mongoose-delete';
+export enum userRoleEnum {
+    USER = 'user',
+    ADMIN = 'admin',
+}
 
-export interface IUser extends Document {
-    _id: string;
+export enum UserRoles {
+    ADMIN = 'admin',
+    USER = 'user',
+}
+export interface IUser extends Document, SoftDeleteDocument {
+    _id: Object;
     email: string;
     password: string;
-    name: string;
+    firstName: string;
+    lastName: string;
+    addresses: Object[];
+    profileImage: string;
+    refreshToken: string;
+    expired: Date;
+    UserRoles: UserRoles;
     isActive?: boolean;
     createdAt?: Date;
     updatedAt?: Date;
+    role: userRoleEnum;
 }
 
 const IUserSchema = new Schema<IUser>(
@@ -19,11 +37,37 @@ const IUserSchema = new Schema<IUser>(
             index: true,
             unique: true,
         },
-        name: { type: String, required: true },
+        addresses: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'address',
+            },
+        ],
         password: { type: String, required: true },
+        firstName: { type: String, required: true },
+        lastName: { type: String, required: true },
+        profileImage: {
+            type: String,
+            default:
+                'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-vector-260nw-1725655669.jpg',
+        },
+        refreshToken: { type: String },
         isActive: { type: Boolean, default: true },
+        role: {
+            type: String,
+            enum: Object.values(userRoleEnum),
+            default: userRoleEnum.USER,
+        },
+        expired: { type: Date },
+        UserRoles: {
+            type: String,
+            enum: Object.values(UserRoles),
+            default: UserRoles.USER,
+        },
     },
     { collection: 'user', timestamps: true },
 );
+IUserSchema.plugin(MongooseDelete, { deletedAt: true, overrideMethods: true });
+IUserSchema.plugin(paginate);
 
-export const UserModel: Model<IUser> = model<IUser>('user', IUserSchema);
+export const UserModel: SoftDeleteModel = model<IUser>('user', IUserSchema);

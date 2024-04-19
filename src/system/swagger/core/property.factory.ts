@@ -26,6 +26,9 @@ export class PropertyFactory {
         object: {
             type: 'object',
         },
+        Number: {
+            type: 'number',
+        },
         array: (item, params = {}) => {
             if (PropertyFactory.#PRIMITIVE_TYPES.includes(item)) {
                 return {

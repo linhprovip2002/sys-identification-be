@@ -17,7 +17,7 @@ const winston = createLogger({
                     log => `[${log.timestamp}] [${log.level}] ${log.message}`,
                 ),
             ),
-            level: 'info', // Specify the desired logging level here
+            level: 'debug', // Set logging level to debug
         }),
     ],
 });
@@ -25,4 +25,5 @@ const winston = createLogger({
 export const logger = {
     error: (msg: string) => winston.error(msg),
     info: (msg: string) => winston.info(msg),
+    debug: (msg: string) => winston.debug(msg),
 };

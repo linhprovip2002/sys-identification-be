@@ -19,6 +19,7 @@ interface RouteOptions {
     params?: any;
     consumes?: any;
     errors?: any[];
+    example?: any;
 }
 
 interface ModelOptions {
@@ -38,6 +39,7 @@ export class SwaggerBuilder {
         this.#instance.info = info;
         this.#instance.servers = servers;
         this.#instance.basePath = basePath;
+        this.#instance.example = {};
         this.#instance.components = {
             schemas: {},
         };

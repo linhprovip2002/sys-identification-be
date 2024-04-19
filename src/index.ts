@@ -7,14 +7,14 @@ import { connectDatabase } from './system/database/database.connector';
 import { notFoundHandler } from './system/exceptions/error-handler/';
 import { swaggerBuilder } from './system/swagger';
 import { logger } from './system/logging/logger';
-import { authenticationRouter } from './system/middleware/';
+// import { authenticationRouter } from './system/middleware/';
 
 const app = express();
 const port = 3000;
 app.get('/', (req, res) => {
     res.json({
         Swagger: 'http://localhost:3000/docs',
-    })
+    });
 });
 
 (async () => {
@@ -26,7 +26,7 @@ app.get('/', (req, res) => {
     );
     app.use(express.json());
     app.use(express.urlencoded({ extended: false }));
-    app.use(authenticationRouter);
+    // app.use(authenticationRouter);
     createRootModule(app);
     app.use(swaggerUi.serveWithOptions({ redirect: false }));
     app.use(swaggerUi.serve, swaggerUi.setup(swaggerBuilder.build()));
