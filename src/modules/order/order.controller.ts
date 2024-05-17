@@ -71,13 +71,13 @@ export const createOrderModule = createModuleFactory({
             tags: [MODULE_NAME],
             method: 'post',
             body: CREATE_ORDER_DTO,
-            security: true,
+            // security: true,
         });
 
         router.post(
             '/',
             orderCreateValidator,
-            identityGuard,
+            // identityGuard,
             createHandler(async (req, res) => {
                 const order = await createOrderService.createOrder(req.body);
                 return HttpResponseBuilder.buildOK(res, order);
