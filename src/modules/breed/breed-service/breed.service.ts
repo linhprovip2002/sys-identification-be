@@ -51,10 +51,35 @@ class BreedService {
             };
 
             // logger.info('query' + JSON.stringify(query) + 'options' + JSON.stringify(options));
-            const paginatedResult = await this.paginationService.paginate(
+            let paginatedResult = await this.paginationService.paginate(
                 query,
                 options,
             );
+
+            const result = await CardBreedModel.aggregate([
+                {
+                    $lookup: {
+                        from: 'feedback', // Tên collection product (viết thường và thêm 's' theo mặc định của mongoose)
+                        localField: '_id',
+                        foreignField: 'cardBreedsId',
+                        as: 'feedbacks',
+                    },
+                },
+                {
+                    $project: {
+                        name: 1,
+                        feedbackCount: { $size: '$feedbacks' },
+                    },
+                },
+            ]);
+
+            paginatedResult.docs = paginatedResult.docs.map(breed => {
+                const find = result.find(item => item._id == breed.id);
+                breed = breed.toObject();
+                breed.feedbackCount = find.feedbackCount;
+                console.log(breed);
+                return breed;
+            });
 
             return paginatedResult;
         } catch (error) {
@@ -108,7 +133,7 @@ class BreedService {
     }
     async getFeedbackByBreedId(id: string) {
         try {
-            const breed = await FeedbackModel.find({cardBreedsId: id});
+            const breed = await FeedbackModel.find({ cardBreedsId: id });
             if (!breed) {
                 throw new Error('Breed not found');
             }
