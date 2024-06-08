@@ -164,5 +164,22 @@ export const createUserModule = createModuleFactory({
                 return HttpResponseBuilder.buildNoContent(res);
             }),
         );
+
+        router.put(
+            '/changepass',
+            identityGuard,
+            createHandler(async (req, response) => {
+                const userId = req.user.userId;
+                const currentPass = req.body.currentPass;
+                const newPass = req.body.newPass;
+                const data = await createUserService.changePassword({
+                    userId,
+                    currentPass,
+                    newPass,
+                });
+
+                return response.json(data);
+            }),
+        );
     },
 });

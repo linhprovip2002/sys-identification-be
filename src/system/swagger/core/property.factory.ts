@@ -57,7 +57,11 @@ export class PropertyFactory {
         }),
     };
 
-    static #createSwaggerType({ type, model, example }) {
+    static #createSwaggerType({ type, model,enumValues, example }) {
+        if (enumValues) { // If enum values exist, return enum type
+            return PropertyFactory.TYPE_MAP_TO_MODELS['enum'](enumValues, { example });
+        }
+    
         return ['enum', 'model', 'array'].includes(type)
             ? PropertyFactory.TYPE_MAP_TO_MODELS[type](model, { example })
             : PropertyFactory.TYPE_MAP_TO_MODELS[type];
@@ -72,6 +76,7 @@ export class PropertyFactory {
         const {
             type,
             model = PropertyFactory.#DEFAULT_GENERATOR,
+            enum: enumValues,
             required = true,
             readOnly = false,
             example,
@@ -80,6 +85,7 @@ export class PropertyFactory {
         const swaggerType = PropertyFactory.#createSwaggerType({
             type,
             model,
+            enumValues,
             example,
         });
 
@@ -101,6 +107,7 @@ export class PropertyFactory {
             type,
             name,
             model,
+            enum: enumValues,
             paramsIn = 'query',
             required = true,
             example,
@@ -110,6 +117,7 @@ export class PropertyFactory {
         const swaggerType = PropertyFactory.#createSwaggerType({
             type,
             model,
+            enumValues,
             example,
         });
 

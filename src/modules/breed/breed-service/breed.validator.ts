@@ -10,6 +10,7 @@ export const breedCreateValidator = createInboundValidatorByJoi(
         diet: Joi.array().items(Joi.string()),
         breedImages: Joi.array().items(Joi.string()),
         description: Joi.string().required(),
+        htmlDomDescription: Joi.string(),
     }),
 );
 
@@ -22,5 +23,6 @@ export const breedUpdateValidator = createInboundValidatorByJoi(
         diet: Joi.array().items(Joi.string()),
         breedImages: Joi.array().items(Joi.string()),
         description: Joi.string(),
+        htmlDomDescription: Joi.string(),
     }),
 );

@@ -9,6 +9,7 @@ import {
     blogCreateDtoValidator,
 } from './blog-service/';
 import { logger } from '../../system/logging/logger';
+import { identityGuard } from '../auth/auth-service/service';
 
 const MODULE_NAME = 'Blog';
 export const createBlogModule = createModuleFactory({
@@ -35,10 +36,12 @@ export const createBlogModule = createModuleFactory({
             tags: [MODULE_NAME],
             body: BLOG_DTO_NAME,
             method: 'post',
+            security: true,
         });
         router.post(
             '/',
             blogCreateDtoValidator,
+            identityGuard,
             createHandler(async (req, res) => {
                 const createBlogDTO = {
                     title: req.body.title,
@@ -137,10 +140,12 @@ export const createBlogModule = createModuleFactory({
                     required: true,
                 }),
             ],
+            security: true,
         });
         router.patch(
             '/:id',
             blogUpdateDtoValidator,
+            identityGuard,
             createHandler(async (req, res) => {
                 const updatedBlog = await CreateBlogService.updateBlog(
                     req.params.id,
@@ -164,9 +169,11 @@ export const createBlogModule = createModuleFactory({
                     required: true,
                 }),
             ],
+            security: true,
         });
         router.delete(
             '/:id',
+            identityGuard,
             createHandler(async (req, res) => {
                 await CreateBlogService.deleteBlog(req.params.id);
                 return HttpResponseBuilder.buildNoContent(res);

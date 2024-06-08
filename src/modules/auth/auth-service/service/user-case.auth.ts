@@ -159,9 +159,9 @@ class AuthenticationService {
             }
             
             // Check if token has expired
-            if (new Date(user.expired) < new Date()) {
-                throw new TokenUserExpired();
-            }
+            // if (new Date(user.expired) < new Date()) {
+            //     throw new TokenUserExpired();
+            // }
     
             const hashedPassword = await this.hashService.hash(body.newPassword);
             const expirationTime = new Date();

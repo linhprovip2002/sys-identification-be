@@ -12,6 +12,7 @@ export interface ICardBreed extends Document {
     diet: IProduct;
     breedImages: string[]; // Images of the breed
     description: string;
+    htmlDomDescription: string;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -29,6 +30,7 @@ export const CardBreedSchema = new Schema<ICardBreed>(
             },
         ],
         description: { type: String, required: true },
+        htmlDomDescription: { type: String },
     },
     { collection: 'cardBreed', timestamps: true },
 );

@@ -1,5 +1,4 @@
 export * from './user.schema';
-export * from './address.schema';
 export * from './order.schema';
 export * from './blog.schema';
 export * from './category.schema';

@@ -1,29 +1,35 @@
-# Use the official Node.js image as base image
-FROM node
+# Base image
+FROM node AS base
 
-# Set an argument for the image name (default is express-be)
-ARG IMAGE_NAME=express-be
+# Install pnpm globally
+RUN npm i -g pnpm
 
-# Set environment variables
-ENV DATABASE_URL="mongodb://localhost:27017/test"
-ENV JWT_SECRET="secret"
+FROM base AS dependencies
 
-# Install Yarn globally
-
-# Set the working directory inside the container
 WORKDIR /app
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install
 
-# Copy package.json and yarn.lock to the working directory
-COPY package.json yarn.lock ./
+FROM dependencies AS build
 
-# Install app dependencies
-RUN yarn install
-
-# Copy the rest of the application code
+WORKDIR /app
 COPY . .
+RUN pnpm build
+RUN pnpm prune --prod
 
-# Expose the port the app runs on
-EXPOSE 3000
+FROM node AS deploy
 
-# Define the command to run your app
-CMD ["yarn", "start"]
+WORKDIR /app
+COPY --from=build /app/dist ./dist
+COPY --from=dependencies /app/node_modules ./node_modules
+
+ENV DATABASE_URL=mongodb+srv://nhatlinhdut3:td1uAMAgupGhminV@pbl7.ozxnm0y.mongodb.net/test?retryWrites=true&w=majority&appName=pbl7
+ENV JWT_SECRET=linhdeptrai
+ENV SMTP_PASS=ucts zclv stcm xyoq
+ENV SMTP_HOST=smtp.gmail.com
+ENV SMTP_PORT=587
+ENV SMTP_USER=dangquangnhatlinh123@gmail.com
+
+ENV PORT=3000
+
+CMD ["node", "dist/src/index.js"]

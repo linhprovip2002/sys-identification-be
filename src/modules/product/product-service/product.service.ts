@@ -8,7 +8,6 @@ import {
     IVariantOptions,
 } from '../../../system/model';
 import { logger } from '../../../system/logging/logger';
-import { stringify } from 'querystring';
 class ProductService {
     private paginationService: PaginationService<IProduct>;
 
@@ -139,33 +138,39 @@ class ProductService {
             throw error;
         }
     }
-    async updateVariantOptions(
-        productId: string,
-        variantOptions: IVariantOptions[],
-    ) {
+    async updateVariantOptions(productId: string, variantOptions) {
         try {
-            const variantOptionPromises = variantOptions.map(
-                variantOptionData =>
-                    VariantOptionsModel.create(variantOptionData),
-            );
-
-            const createdVariantOptions = await Promise.all(
-                variantOptionPromises,
-            );
-
-            const variantOptionsIds = createdVariantOptions.map(
-                variantOption => variantOption._id,
-            );
-
+            let existingVariantOptions = [];
+            const product = await ProductModel.findById(productId);
+            if (product) {
+                existingVariantOptions = product.variantOptions || [];
+            }
+    
+            let newVariantOptionsIds = [];
+            if (Array.isArray(variantOptions)) {
+                const variantOptionPromises = variantOptions.map(
+                    variantOptionData => VariantOptionsModel.create(variantOptionData)
+                );
+    
+                const createdVariantOptions = await Promise.all(variantOptionPromises);
+                newVariantOptionsIds = createdVariantOptions.map(variantOption => variantOption._id);
+            } else {
+                const createdVariantOptions = await VariantOptionsModel.create(variantOptions);
+                newVariantOptionsIds.push(createdVariantOptions._id);
+            }
+    
+            const updatedVariantOptionsIds = existingVariantOptions.concat(newVariantOptionsIds);
+    
             await ProductModel.findByIdAndUpdate(productId, {
-                variantOptions: variantOptionsIds,
+                variantOptions: updatedVariantOptionsIds,
             });
-
+    
             return this.getById(productId);
         } catch (error) {
             throw error;
         }
     }
+    
 }
 
 export const createProductsService = new ProductService(ProductModel);

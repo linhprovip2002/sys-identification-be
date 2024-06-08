@@ -23,6 +23,7 @@ class BlogService {
                 page: blogQuery.page || 1,
                 limit: blogQuery.limit || 10,
                 sort: sortOptions,
+                select: '-content',
                 populate: [{ path: 'category', select: 'name' }],
             };
             const paginatedResult = await this.paginationService.paginate(

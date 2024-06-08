@@ -1,52 +1,16 @@
-verion: '3.8'
+version: '3'
 services:
-  backend:
-    container_name: express-be
-    image: express-be
-    restart: always
-    depends_on:
-      - db
-      - redis
+  app:
+    build: .
+    command: npm run dev
+    volumes:
+      - .:/usr/app/
+      - /usr/app/node_modules
     ports:
-      - 3000:3000
+      - "3000:3000"
     environment:
       - NODE_ENV=development
-      - PORT=3000
-      - DATABASE_URL= mongodb://localhost:27017/test
-      - JWT_SECRET=secret
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - REDIS_PASSWORD=
-    networks:
-      - express-boilerplate
-  db:
-    container_name: mongo
-    image: mongo
-    restart: always
-    ports:
-      - 27017:27017
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=
-      - MONGO_INITDB_ROOT_PASSWORD=
-    volumes:
-      - mongo:/data/db
-    networks:
-      - express-boilerplate      
-  redis:
-    container_name: redis
-    image: redis
-    restart: always
-    ports:
-      - 6379:6379
-    networks:
-      - express-boilerplate
-    volumes:
-      - redis:/data
+      - DATABASE_URL=mongodb+srv://nhatlinhdut3:td1uAMAgupGhminV@pbl7.ozxnm0y.mongodb.net/test
 volumes:
-  data:
-  mongo:
-  redis:
-
-networks:
-  node-network:
-    driver: bridge
+  mongodb_data:
+    driver: local

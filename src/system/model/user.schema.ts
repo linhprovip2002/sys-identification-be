@@ -1,7 +1,7 @@
-import { model, Model, Schema, Document, Mongoose } from 'mongoose';
+import { model, Schema, Document } from 'mongoose';
 import paginate from 'mongoose-paginate-v2';
-import { SoftDeleteDocument } from 'mongoose-delete';
 import MongooseDelete, { SoftDeleteModel } from 'mongoose-delete';
+
 export enum userRoleEnum {
     USER = 'user',
     ADMIN = 'admin',
@@ -11,20 +11,17 @@ export enum UserRoles {
     ADMIN = 'admin',
     USER = 'user',
 }
-export interface IUser extends Document, SoftDeleteDocument {
-    _id: Object;
+
+export interface IUser extends Document {
     email: string;
     password: string;
     firstName: string;
-    lastName: string;
-    addresses: Object[];
+    lastName: string;// Change Object[] to Array<any> or specify a specific type
     profileImage: string;
     refreshToken: string;
     expired: Date;
     UserRoles: UserRoles;
     isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
     role: userRoleEnum;
 }
 
@@ -37,12 +34,6 @@ const IUserSchema = new Schema<IUser>(
             index: true,
             unique: true,
         },
-        addresses: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: 'address',
-            },
-        ],
         password: { type: String, required: true },
         firstName: { type: String, required: true },
         lastName: { type: String, required: true },
@@ -65,9 +56,10 @@ const IUserSchema = new Schema<IUser>(
             default: UserRoles.USER,
         },
     },
-    { collection: 'user', timestamps: true },
+    { collection: 'user', timestamps: true }
 );
+
 IUserSchema.plugin(MongooseDelete, { deletedAt: true, overrideMethods: true });
 IUserSchema.plugin(paginate);
 
-export const UserModel: SoftDeleteModel = model<IUser>('user', IUserSchema);
+export const UserModel: SoftDeleteModel<IUser> = model<IUser>('user', IUserSchema);
